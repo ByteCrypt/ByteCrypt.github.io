@@ -3,9 +3,10 @@
     box-sizing: content-box;
   }
   :root {
-    --cyber-purple: #711c91;
+    /* https://www.color-hex.com/color-palette/60322 */
+    --cyber-purple: #54295c;
     --cyber-pink: 	#ea00d9;
-    --cyber-cyan: 	#0abcc68f;
+    --cyber-cyan: 	#467fa1;
     --cyber-blue: 	#133e7c;
     --cyber-black: 	#000000;
     --text-white: #ffffff;
