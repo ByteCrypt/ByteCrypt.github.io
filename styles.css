@@ -31,6 +31,28 @@
     margin-left: auto;
     margin-right: auto;
   }
+  .info {
+    min-width: 33%;
+  }
+
+  .email-signup .email-form {
+    flex-wrap: wrap; 
+    display: inline-flex;
+    color: #000000;
+    background-color: #000000;
+  }
+  .email-form input { 
+    display: inline-block;
+    background-color: #000000;  
+    border-color: #202020;
+    color: #ffffff;
+    padding: 2px;
+    max-height: 20px;
+  }
+  .email-form button {
+    align-items: center;
+  }
+
   /* Small */
   @media (min-width: 768px) {
     .container {
