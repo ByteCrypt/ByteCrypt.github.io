@@ -1,0 +1,49 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    font-size: 1em;
+    flex-wrap: wrap;
+}
+
+.header-logo-main {
+    display: flex;
+    text-decoration: none;
+    color: white;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5em;
+}
+
+.header-logo-image {
+    height: 30px;
+    margin-right: -0.5em;
+    margin-left: -0.8em;
+}
+
+.nav {
+    display: flex;
+    font-size: 0.8em;
+    justify-content: center;
+    align-items: center;
+    gap: 2em;
+    flex-wrap: wrap;
+}
+
+.nav-button {
+    background-color: #467fa1;
+    height: 2.2em;
+    width: 7.2em;
+    color: white;
+    border-radius: 1.5em;
+    border-style: none;
+}
+
+@media (max-width: 790) {
+    .header {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+}
