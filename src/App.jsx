@@ -16,7 +16,7 @@ export default function App() {
         
         <div class="app-content">
           <Content></Content>
-          <img class="app-content-logo" src="./images/Bytecrypt-logo_no_bg.svg" alt="Bytecrypt Logo"></img>
+          <img class="app-content-logo" src="./images/ByteCrypt-logo_no_bg.svg" alt="Bytecrypt Logo"></img>
         </div>
       </div>
     
