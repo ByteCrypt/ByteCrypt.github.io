@@ -1,5 +1,7 @@
 import "./header.css";
 
+import ByteCrypt_Logo from "../../images//ByteCrypt-logo_no_bg.png";
+
 export default function Header() {
 
     const buttonClick = () => {
@@ -10,7 +12,7 @@ export default function Header() {
         <div class="header">
             <div class="header-logo">
                 <a class="header-logo-main" href="#">
-                    <img class="header-logo-image" src="./images/crypt.png" alt="Bytecrypt Logo" />
+                    <img class="header-logo-image" src={ByteCrypt_Logo} alt="Bytecrypt Logo" />
 
                     <p class="header-logo-text">
                         <strong><em>BYTECRYPT</em></strong>
