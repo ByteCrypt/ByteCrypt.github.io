@@ -31,12 +31,12 @@ export default function Content() {
     };
 
     return (
-        <div class="subscribe" >
-            <h1 class="subscribe-main" style={{ maxWidth: "8em"}}>
+        <div class="content" >
+            <h1 class="content-main" style={{ maxWidth: "8em"}}>
                 Never worry about data leaks again.
             </h1>
 
-            <p class="subscribe-text" style={{ fontSize: "0.7em"}}>
+            <p class="content-text" style={{ fontSize: "0.7em"}}>
                 Launching soon.  Sign up for a sneak peek and more.
             </p>
 

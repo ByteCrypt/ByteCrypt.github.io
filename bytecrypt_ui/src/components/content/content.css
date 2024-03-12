@@ -1,7 +1,8 @@
-.subscribe {
+.content {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     gap: 1em;
 }
 
@@ -32,11 +33,6 @@
     border-color: #202020;
 }
 
-.subscribe {
-    order: 0;
-    z-index: 1;
-}
-
 .subscribe-button {
     align-self: flex-start;
     background-color: #54295c;
@@ -52,21 +48,30 @@
     background-color: #ba93ff;
 }
 
-@media (max-width: 790px) {
-    .subscribe-logo {
-      order: 0;
-      margin-top: -5em;
-      margin-left: -15em;
-      width: 100%;
-      z-index: -1;
-    }
-  
+/* Everything else */
+@media (min-width: 769px) {
+
+}
+
+/* Most other handhelds */
+@media (max-width: 768px) {
     .subscribe {
-      order: 2;
+        order: 2;
+        flex-direction: column;
     }
-  
+
+    .subscribe-logo {
+        order: 0;
+        width: 100%;
+    }
+
     .subscribe-button {
-      align-self: center;
+        align-self: center;
     }
-  }
+}
+
+/* Most smartphones */
+@media (max-width: 480px) {
+
+}
   

@@ -1,45 +1,10 @@
+/* Global settings */
 .footer {
+    margin: 1em 5em 0.5em 5em;
     display: flex;
     flex-direction: column;
+    justify-content: center;
 }
-
-.footer-top {
-    display: flex;
-    justify-content: space-between;
-    align-content: center;
-    margin: 1em 3em;
-}
-
-.footer-quote-main {
-    color: #595959;
-}
-
-.footer-quote-text {
-    font-size: 0.75em;
-}
-
-.footer-about {
-    display: flex;
-    flex-direction: column;
-    font-size: 0.8em;
-    color: #dddddd;
-    margin: 0em 2.3em;
-    gap: 0.5em;
-}
-
-.footer-about-main {
-    color: white;
-    font-size: 1.2em;
-    font-weight: bold;
-    font-style: underline;
-    margin: 0 -0.3em;
-}
-
-.footer-link {
-    text-decoration: none;
-    color: #ffffffb7;
-}
-  
 
 .twitter-icon, .youtube-icon {
     max-height: 1em;
@@ -50,19 +15,76 @@
     gap: 1em;
 }
 
+.footer-quote {
+    text-align: center;
+}
+
+.footer-quote-main {
+    color: #595959;
+}
+
+.footer-quote-text {
+    font-size: 0.75em;
+}
+
+.footer-top {
+    display: flex;
+    justify-content: space-between;
+    margin-left: -2em;
+}
+
+.footer-about {
+    display: flex;
+    flex-direction: column;
+    color: #dddddd;
+}
+
+.footer-about-main {
+    color: white;
+    font-size: 1em;
+    font-weight: bold;
+}
+
+.footer-link {
+    text-decoration: none;
+    font-size: 0.7em;
+    color: #ffffffb7;
+    padding-left: 10px;
+}
+
 .footer-copyright {
+    padding-top: 5px;
     text-align: center;
     font-size: 0.6em;
 }
 
+/* Everything else */
+@media (min-width: 769px) {
+
+}
+
+/* Most other handhelds */
 @media (max-width: 768px) {
-    .footer-top {
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 1em;
+
+}
+
+/* Most smartphones */
+@media (max-width: 480px) {
+    .footer {
+        gap: 0.5em;
+        margin: 1em 0 -8em;
+        padding: 0;
     }
 
-    .footer-quote {
-        order: 1;
+    .footer-top {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+    }
+
+    .footer-about {
+        text-align: center;
     }
 }

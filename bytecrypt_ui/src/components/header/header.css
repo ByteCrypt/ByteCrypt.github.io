@@ -40,10 +40,30 @@
     border-style: none;
 }
 
-@media (max-width: 790) {
+/* Everything else */
+@media (min-width: 769px) {
+
+}
+
+/* Most other handhelds */
+@media (max-width: 600px) {
     .header {
         flex-direction: column;
         justify-content: center;
         align-items: center;
+    }
+}
+
+/* Most smartphones */
+@media (max-width: 480px) {
+
+}
+
+@media (max-width: 350px) {
+    .nav {
+        margin-top: 0.5em;
+    }
+    .nav-button {
+        margin-top: -1.5em;
     }
 }

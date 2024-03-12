@@ -12,10 +12,7 @@ export default function Footer() {
                     <a class="footer-link" href="#">Privacy Policy</a>
                 </div>
 
-                <div class="footer-quote">
-                    <p class="footer-quote-main">ByteCrypt</p>
-                    <p class="footer-quote-text">Take your data to the grave.</p>
-                </div>
+
 
                 
 
@@ -30,6 +27,10 @@ export default function Footer() {
             </div>
 
             <div class="footer-bottom">
+                <div class="footer-quote">
+                    <p class="footer-quote-main">ByteCrypt</p>
+                    <p class="footer-quote-text">Take your data to the grave.</p>
+                </div>
                 <p class="footer-copyright">©2023-2024 Mason Software</p>
             </div>
         </div>
