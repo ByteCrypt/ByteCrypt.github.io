@@ -1,6 +1,6 @@
 import "./header.css";
 
-import ByteCrypt_Logo from "../../images//ByteCrypt-logo_no_bg.png";
+import ByteCrypt_Logo from "../../images/ByteCrypt_Logo.svg";
 
 export default function Header() {
 

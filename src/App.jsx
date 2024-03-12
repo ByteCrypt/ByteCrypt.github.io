@@ -1,6 +1,6 @@
 import './App.css';
 
-import ByteCrypt_Logo from "./images/ByteCrypt-logo_no_bg.png"
+import ByteCrypt_Logo from "./images/ByteCrypt_Logo.svg"
 
 
 import Header from './components/header/header';

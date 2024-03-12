@@ -1,5 +1,8 @@
 import "./footer.css";
 
+import Twitter_Icon from "../../images/logo-white.png";
+import YouTube_Icon from "../../images/yt_logo_rgb_dark.png";
+
 export default function Footer() {
     return (
         <div class="footer">
@@ -12,16 +15,12 @@ export default function Footer() {
                     <a class="footer-link" href="#">Privacy Policy</a>
                 </div>
 
-
-
-                
-
                 <div class="footer-social">
                     <a class="twitter-link" href="https://twitter.com/thebytecrypt">
-                        <img class="twitter-icon" src="./images/logo-white.png"></img>
+                        <img class="twitter-icon" src={Twitter_Icon}></img>
                     </a>
                     <a class="youtube-link" href="https://thebytecrypt.com">
-                        <img class="youtube-icon" src="./images/yt_logo_rgb_dark.png"></img>
+                        <img class="youtube-icon" src={YouTube_Icon}></img>
                     </a>
                 </div>
             </div>
