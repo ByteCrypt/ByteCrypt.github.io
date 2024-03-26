@@ -1,8 +1,10 @@
+// CSS
 import './App.css';
 
+// Images
 import ByteCrypt_Logo from "./images/ByteCrypt_Logo.svg"
 
-
+// Components
 import Header from './components/header/header';
 import Content from './components/content/content';
 import Footer from './components/footer/footer';
