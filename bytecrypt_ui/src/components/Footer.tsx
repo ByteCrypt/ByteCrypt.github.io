@@ -22,7 +22,7 @@ export default function Footer() {
                 <p className="text-sm uppercase">Take your data to the grave</p>
             </div>
 
-            <div className="flex gap-2 self-center">
+            <div className="flex gap-2 sm:self-start self-center">
                 <a href="https://github.com/ExtremelyRyan/ByteCrypt">
                     <FontAwesomeIcon icon={faGithub} />
                 </a>
