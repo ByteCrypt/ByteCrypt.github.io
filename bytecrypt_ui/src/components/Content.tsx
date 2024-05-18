@@ -55,7 +55,7 @@ function subscribe(email: string) {
     const sanitizeEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (sanitizeEmail.test(email)) {
-        fetch("http://localhost:5150/api/subscribe", {
+        fetch("http://localhost:5150/api/v1/subscribe", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
