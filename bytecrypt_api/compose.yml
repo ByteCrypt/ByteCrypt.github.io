@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres
+    restart: always
+    env_file:
+      /run/secrets
+    volumes:
+      - postgres_data:var/lib/postgresql/data
+
+  bytecrypt_api:
+    build:
+      context: /bytecrypt_api
+    env_file:
+      /run/secrets
+    ports:
+      - 5150:5150
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./bytecrypt_api
+          target: /bytecrypt_api
+    depends_on:
+      - db
+    
+
+volumes:
+  postgres_data:

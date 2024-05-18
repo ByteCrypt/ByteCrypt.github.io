@@ -1,60 +1,47 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	v1_controllers "bytecrypt_api/v1/controllers"
 )
 
-type Subscription struct {
-	Email string `json:"email"`
+func main() {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", index)
+	mux.HandleFunc("/api/v1/subscribe", v1_controllers.SubscribeHandler)
+	if err := http.ListenAndServe(":5150", mux); err != nil {
+		fmt.Println("Error starting on server: ", err)
+	}
 }
 
-func subscribeHandler(writer http.ResponseWriter, req *http.Request) {
-	var sub Subscription
-
-	err := json.NewDecoder(req.Body).Decode(&sub)
-	if err != nil {
-		http.Error(writer, err.Error(), http.StatusBadRequest)
+func index(writer http.ResponseWriter, request *http.Request) {
+	if request.URL.Path != "/" {
+		http.NotFound(writer, request)
 		return
 	}
 
-	fmt.Printf("Subscription request received for email: %s\n", sub.Email)
+	switch request.Method {
+	case http.MethodGet:
+		{
 
-	writer.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(writer).Encode(map[string]string{"message": "Subscription successful!"})
-}
+		}
 
-func main() {
-	router := mux.NewRouter()
+	case http.MethodPost:
+		{
 
-	// Set up CORS Middleware
-	corsMiddleware := func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(writer http.ResponseWriter, req *http.Request) {
-			writer.Header().Set("Access-Control-Allow-Origin", "*")
-			writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
-			writer.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		}
 
-			if req.Method == "OPTIONS" {
-				return
-			}
+	case http.MethodOptions:
+		{
 
-			next.ServeHTTP(writer, req)
-		})
-	}
+		}
 
-	// Apply CORS to all routes
-	router.Use(corsMiddleware)
-	router.HandleFunc("/api/subscribe", subscribeHandler).Methods("POST")
-
-	router.HandleFunc("/", func(writer http.ResponseWriter, req *http.Request) {
-		fmt.Fprintf(writer, "Hellu, whale cum tu da weetahdit wunz")
-	}).Methods("GET")
-
-	fmt.Println("Server starting on port 5150...")
-	if err := http.ListenAndServe(":5150", router); err != nil {
-		fmt.Println("Error starting on server: ", err)
+	default:
+		{
+			writer.Header().Set("Allow", "GET, POST, OPTIONS")
+			http.Error(writer, "method not allowed", http.StatusMethodNotAllowed)
+		}
 	}
 }
