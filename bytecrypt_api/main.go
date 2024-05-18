@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytecrypt_api/common"
+	"context"
 	"fmt"
 	"net/http"
 
@@ -8,40 +10,19 @@ import (
 )
 
 func main() {
+	context, cancel := context.WithCancel(context.Background())
+	backend := common.BackEnd{
+		Output:  make(chan string, 100),
+		Input:   make(chan string, 100),
+		Context: context,
+		Cancel:  cancel,
+	}
+	go backend.HandleOutput()
+	go backend.HandleInput()
+
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", index)
 	mux.HandleFunc("/api/v1/subscribe", v1_controllers.SubscribeHandler)
 	if err := http.ListenAndServe(":5150", mux); err != nil {
 		fmt.Println("Error starting on server: ", err)
-	}
-}
-
-func index(writer http.ResponseWriter, request *http.Request) {
-	if request.URL.Path != "/" {
-		http.NotFound(writer, request)
-		return
-	}
-
-	switch request.Method {
-	case http.MethodGet:
-		{
-
-		}
-
-	case http.MethodPost:
-		{
-
-		}
-
-	case http.MethodOptions:
-		{
-
-		}
-
-	default:
-		{
-			writer.Header().Set("Allow", "GET, POST, OPTIONS")
-			http.Error(writer, "method not allowed", http.StatusMethodNotAllowed)
-		}
 	}
 }
