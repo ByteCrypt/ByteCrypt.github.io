@@ -2,31 +2,36 @@ version: "3.9"
 
 services:
   db:
-    image: postgres
-    restart: always
+    image: postgres:15-alpine3.18
     env_file:
       - path: ./database.env
         required: true
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  bytecrypt_api:
+  api:
     build:
       context: .
-    ports:
-      - 5150:5150
     env_file:
       - path: ./database.env
         required: true
       - path: ./bytecrypt_api.env
         required: true
-    develop:
-      watch:
-        - action: sync+restart
-          path: ./bytecrypt_api
-          target: /bytecrypt_api
+    ports:
+      - 5150:5150
+    volumes:
+      - .:/bytecrypt_api
+    tty: true
+    stdin_open: true
+    command: ["sh"]
     depends_on:
       - db
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8086:8080
 
 volumes:
   postgres_data:

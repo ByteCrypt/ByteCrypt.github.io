@@ -4,19 +4,38 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"net/http"
 	"os"
+	"time"
 )
 
-type BackEnd struct {
+type Backend struct {
 	Output  chan string
 	Input   chan string
 	Context context.Context
 	Cancel  context.CancelFunc
+	Server  *http.Server
 }
 
-func (backend *BackEnd) HandleInput() {
+func InitBackend() *Backend {
+	context, cancel := context.WithCancel(context.Background())
+	backend := Backend{
+		Output:  make(chan string, 100),
+		Input:   make(chan string, 100),
+		Context: context,
+		Cancel:  cancel,
+	}
+	backend.init()
+	return &backend
+}
+
+func (backend *Backend) init() {
+	go backend.HandleInput()
+	go backend.HandleOutput()
+}
+
+func (backend *Backend) HandleInput() {
 	scanner := bufio.NewScanner(os.Stdin)
-	go backend.ProcessInput()
 
 	for scanner.Scan() {
 		select {
@@ -31,23 +50,7 @@ func (backend *BackEnd) HandleInput() {
 	}
 }
 
-func (backend *BackEnd) ProcessInput() {
-	for text := range backend.Input {
-		select {
-		case <-backend.Context.Done():
-			return
-
-		default:
-			{
-				// Actually process the input text but for right now just print
-				fmt.Println(text)
-			}
-		}
-	}
-
-}
-
-func (backend *BackEnd) HandleOutput() {
+func (backend *Backend) HandleOutput() {
 	for output := range backend.Output {
 		select {
 		case <-backend.Context.Done():
@@ -55,9 +58,23 @@ func (backend *BackEnd) HandleOutput() {
 
 		default:
 			{
-				// Print the output
 				fmt.Println(output)
 			}
 		}
 	}
+}
+
+func (backend *Backend) Shutdown() {
+	fmt.Println("Exiting backend")
+
+	backend.Cancel()
+	if backend.Server != nil {
+		context, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		if err := backend.Server.Shutdown(context); err != nil {
+			fmt.Println("Error shutting down server:", err)
+		}
+	}
+	close(backend.Input)
+	close(backend.Output)
 }

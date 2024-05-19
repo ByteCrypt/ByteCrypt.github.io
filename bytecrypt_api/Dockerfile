@@ -1,5 +1,5 @@
-FROM golang:1.22-alpine
+FROM golang:1.22-alpine3.18
 WORKDIR /bytecrypt_api
-#RUN go install github.com/jackc/pgx
 COPY . /bytecrypt_api/
-CMD ["go", "run", "."]
+CMD ["sh"]
+#"go", "run", "main.go", 

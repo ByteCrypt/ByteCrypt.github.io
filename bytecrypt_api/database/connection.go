@@ -1,7 +1,7 @@
-package common
+package database
 
 import (
-	"bytecrypt_api/database"
+	"bytecrypt_api/common"
 	"context"
 	"errors"
 	"fmt"
@@ -11,19 +11,25 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-type Provider struct {
-	Queries *database.Queries
+func runMigrations(migrationFile string, queries *Queries, context *context.Context) error {
+	fileContents, err := os.ReadFile(migrationFile)
+	if err != nil {
+		return err
+	}
+
+	_, err = queries.db.Exec(*context, string(fileContents))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func NewProvider(queries *database.Queries) Provider {
-	return Provider{Queries: queries}
-}
-
-func (backend *BackEnd) NewDatabaseConnection() (*database.Queries, error) {
+func NewDatabaseConnection(backend *common.Backend) (*Queries, *pgx.Conn, error) {
 	context := context.Background()
 	connString := os.Getenv("DB_URI")
 	if len(connString) == 0 {
-		return nil, errors.New("no database uri found in environment variables")
+		return nil, nil, errors.New("no database uri found in environment variables")
 	}
 
 	var (
@@ -42,9 +48,12 @@ func (backend *BackEnd) NewDatabaseConnection() (*database.Queries, error) {
 		time.Sleep(time.Second * 10)
 	}
 
-	queries := database.New(conn)
+	queries := New(conn)
 
-	// Migrations here
+	err = runMigrations("./database/schemas/schema.sql", queries, &context)
+	if err != nil {
+		return nil, nil, err
+	}
 
-	return queries, nil
+	return queries, conn, nil
 }
