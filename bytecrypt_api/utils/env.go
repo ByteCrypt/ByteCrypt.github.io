@@ -8,4 +8,5 @@ const (
 	DbUri            Environment = "DB_URI"
 	PostgresPassword Environment = "POSTGRES_PASSWORD"
 	BackendAddress   Environment = "BACKEND_ADDRESS"
+	Schema           Environment = "./database/schemas/schema.sql"
 )

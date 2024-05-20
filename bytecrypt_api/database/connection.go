@@ -11,6 +11,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
+// Performs migrations of the database into the necessary migration file
 func runMigrations(migrationFile string, queries *Queries, context *context.Context) error {
 	fileContents, err := os.ReadFile(migrationFile)
 	if err != nil {
@@ -44,14 +45,20 @@ func NewDatabaseConnection(backend *utils.Backend) (*Queries, *pgx.Conn, error) 
 			backend.Output <- "Successfully connected to database"
 			break
 		}
+		if i == 5 {
+			backend.Log <- utils.NewLog(utils.Error, fmt.Sprintf("Could not connect to database: %v", err))
+			return nil, nil, err
+		}
 		backend.Output <- fmt.Sprintf("Failed to connect to database: %v\nAttempting again in 10 seconds", err)
+		backend.Log <- utils.NewLog(utils.Warn, fmt.Sprintf("Failed to connect to database, attempt %d", i))
 		time.Sleep(time.Second * 10)
 	}
 
 	queries := New(conn)
 
-	err = runMigrations("./database/schemas/schema.sql", queries, &context)
+	err = runMigrations(string(utils.Schema), queries, &context)
 	if err != nil {
+		backend.Log <- utils.NewLog(utils.Error, fmt.Sprintf("Failed to run migrations: %v", err))
 		return nil, nil, err
 	}
 

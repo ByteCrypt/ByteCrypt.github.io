@@ -39,6 +39,7 @@ func main() {
 	<-backend.Context.Done()
 }
 
+// Processes the input given by the user from the backend input buffer
 func processInput(backend *utils.Backend) {
 	for text := range backend.Input {
 		select {
@@ -81,6 +82,7 @@ func processInput(backend *utils.Backend) {
 	}
 }
 
+// Processes all database commands given by the user
 func processInputDatabase(backend *utils.Backend, inputList []string, input string) {
 	if len(inputList) < 2 {
 		backend.Output <- "Insufficient arguments passed"

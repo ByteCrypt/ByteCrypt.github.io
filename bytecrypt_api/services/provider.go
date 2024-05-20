@@ -26,6 +26,7 @@ func (provider *Provider) CloseDatabaseConnection(backend *utils.Backend) error 
 	if provider.Conn != nil {
 		err := provider.Conn.Close(context.Background())
 		if err != nil {
+			backend.Log <- utils.NewLog(utils.Error, fmt.Sprintf("Could not close connection to database: %v", err))
 			backend.Output <- fmt.Sprintf("Failed to close connection to database: %v", err)
 			return err
 		}
