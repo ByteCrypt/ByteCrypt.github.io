@@ -5,6 +5,7 @@ import (
 	"bytecrypt_api/utils"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 
 	v1_controllers "bytecrypt_api/v1/controllers"
@@ -22,14 +23,14 @@ func main() {
 	mux.HandleFunc("/api/v1/subscribe", v1_controllers.SubscribeHandler(backend))
 	mux.HandleFunc("/api/v1/unsubscribe", v1_controllers.UnsubscribeHandler(backend))
 	server := &http.Server{
-		Addr:    ":5150",
+		Addr:    os.Getenv(string(utils.BackendAddress)),
 		Handler: mux,
 	}
 
 	backend.Server = server
 
 	go func() {
-		if err := http.ListenAndServe(":5150", mux); err != nil && err != http.ErrServerClosed {
+		if err := http.ListenAndServe(os.Getenv(string(utils.BackendAddress)), mux); err != nil && err != http.ErrServerClosed {
 			fmt.Println("Error starting on server: ", err)
 			backend.Cancel()
 		}

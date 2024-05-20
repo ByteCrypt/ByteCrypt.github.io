@@ -7,4 +7,5 @@ const (
 	LogFile          Environment = "LOG_FILE"
 	DbUri            Environment = "DB_URI"
 	PostgresPassword Environment = "POSTGRES_PASSWORD"
+	BackendAddress   Environment = "BACKEND_ADDRESS"
 )
