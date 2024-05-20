@@ -40,7 +40,7 @@ export default function Content() {
                         className="self-center sm:self-start bg-violet-700 rounded-3xl text-lg mt-3 h-8 w-24"
                         type="button"
                         value="Subscribe"
-                        onClick={_ => subscribe(email)}
+                        onClick={_ => subscribe(name, email)}
                     ></input>
                 </form>
             </div>
@@ -50,12 +50,33 @@ export default function Content() {
     );
 }
 
-function subscribe(email: string) {
+function subscribe(name: string, email: string) {
     // https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html
     const sanitizeEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (sanitizeEmail.test(email)) {
         fetch("http://localhost:5150/api/v1/subscribe", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ name: name, email: email }),
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return response.json();
+        }).then(data => console.log("Success:", data))
+            .catch((error) => console.error("Error:", error));
+    }
+}
+
+function unsubscribe(email: string) {
+    // https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html
+    const sanitizeEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (sanitizeEmail.test(email)) {
+        fetch("http://localhost:5150/api/v1/unsubscribe", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -70,15 +91,3 @@ function subscribe(email: string) {
             .catch((error) => console.error("Error:", error));
     }
 }
-
-// function fetchData() {
-//     fetch('http://localhost:5150/api/data')
-//         .then(response => {
-//             if (!response.ok) {
-//                 throw new Error('Network response was not ok');
-//             }
-//             return response.json();
-//         })
-//         .then(data => console.log(data))
-//         .catch(error => console.error('Error fetching data:', error));
-// }

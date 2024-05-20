@@ -1,8 +1,8 @@
 package services
 
 import (
-	"bytecrypt_api/common"
 	"bytecrypt_api/database"
+	"bytecrypt_api/utils"
 	"context"
 	"fmt"
 
@@ -14,11 +14,15 @@ type Provider struct {
 	Conn    *pgx.Conn
 }
 
-func NewProvider(queries *database.Queries, conn *pgx.Conn) Provider {
-	return Provider{Queries: queries, Conn: conn}
+func NewProvider(backend *utils.Backend) (Provider, error) {
+	queries, conn, err := database.NewDatabaseConnection(backend)
+	if err != nil {
+		return Provider{}, err
+	}
+	return Provider{Queries: queries, Conn: conn}, nil
 }
 
-func (provider *Provider) CloseDatabaseConnection(backend *common.Backend) error {
+func (provider *Provider) CloseDatabaseConnection(backend *utils.Backend) error {
 	if provider.Conn != nil {
 		err := provider.Conn.Close(context.Background())
 		if err != nil {

@@ -1,7 +1,7 @@
 package database
 
 import (
-	"bytecrypt_api/common"
+	"bytecrypt_api/utils"
 	"context"
 	"errors"
 	"fmt"
@@ -25,9 +25,9 @@ func runMigrations(migrationFile string, queries *Queries, context *context.Cont
 	return nil
 }
 
-func NewDatabaseConnection(backend *common.Backend) (*Queries, *pgx.Conn, error) {
+func NewDatabaseConnection(backend *utils.Backend) (*Queries, *pgx.Conn, error) {
 	context := context.Background()
-	connString := os.Getenv("DB_URI")
+	connString := os.Getenv(string(utils.DbUri))
 	if len(connString) == 0 {
 		return nil, nil, errors.New("no database uri found in environment variables")
 	}
