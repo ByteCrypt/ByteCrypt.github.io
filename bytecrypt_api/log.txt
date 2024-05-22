@@ -1,0 +1,4 @@
+time=2024-05-20T23:10:47.571Z level=INFO msg="Subscription Attempt: Ketsu::sublimeibanez@protonmail.com -- Subscription attempt was successful"
+time=2024-05-20T23:14:06.889Z level=INFO msg="Subscription Attempt: jimbob::localhost.tasting907@passmail.net -- Subscription attempt was successful"
+time=2024-05-20T23:32:06.945Z level=INFO msg="Subscription Attempt: ryan rtxyomama::ryan.mason814@gmail.com -- Subscription attempt was successful"
+time=2024-05-21T03:47:01.015Z level=INFO msg="Subscription Attempt: kekw::lucas.sproule@gmail.com -- Subscription attempt was successful"
