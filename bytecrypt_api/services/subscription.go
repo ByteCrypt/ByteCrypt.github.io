@@ -5,64 +5,45 @@ import (
 	"bytecrypt_api/v1/models"
 	"context"
 	"fmt"
-	"net"
-	"regexp"
 	"strings"
 )
-
-const EMAIL_EXPRESSION = `^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`
-
-func (provider *Provider) ValidateEmail(email string) error {
-	emailExp, err := regexp.Compile(EMAIL_EXPRESSION)
-	if err != nil {
-		return err
-	}
-
-	parts := strings.Split(email, "@")
-	if len(parts) != 2 {
-		return fmt.Errorf("email is not correctly formatted: %s", email)
-	}
-
-	domain := parts[1]
-	mx, err := net.LookupMX(domain)
-	if err != nil || len(mx) == 0 {
-		return fmt.Errorf("email domain is invalid %s", email)
-	}
-
-	if !emailExp.MatchString(email) {
-		return fmt.Errorf("email is invalid: %s", email)
-	}
-
-	return nil
-}
 
 func (provider *Provider) AddSubscription(sub models.Subscription) (models.Subscription, error) {
 	emailValidation := provider.ValidateEmail(sub.Email)
 	if emailValidation != nil {
-		return models.Subscription{}, emailValidation
+		return models.NewSubscription("", ""), emailValidation
 	}
 
 	_, err := provider.GetSubscriptionByEmail(sub.Email)
 	if err != nil && !strings.Contains(err.Error(), "no rows in result set") {
-		return models.Subscription{}, fmt.Errorf("user already exists: %s", sub.Email)
+		return models.NewSubscription("", ""), fmt.Errorf("user already exists: %s", sub.Email)
 	}
 
 	addSub := database.AddSubscriptionParams{Email: sub.Email, Name: sub.Name}
 	_, err = provider.Queries.AddSubscription(context.Background(), addSub)
 	if err != nil {
-		return models.Subscription{}, err
+		return models.NewSubscription("", ""), err
 	}
 
 	return sub, nil
 }
 
-func (provider *Provider) GetSubscriptionByEmail(email string) (models.Subscription, error) {
-	sub, err := provider.Queries.GetSubscriptionEmail(context.Background(), email)
+func (provider *Provider) GetSubscriptionById(id int64) (models.Subscription, error) {
+	sub, err := provider.Queries.GetSubscriptionById(context.Background(), id)
 	if err != nil {
 		return models.Subscription{}, err
 	}
 
-	return models.Subscription{Email: sub.Email, Name: sub.Name}, nil
+	return models.NewSubscription(sub.Email, sub.Name), nil
+}
+
+func (provider *Provider) GetSubscriptionByEmail(email string) (models.Subscription, error) {
+	sub, err := provider.Queries.GetSubscriptionByEmail(context.Background(), email)
+	if err != nil {
+		return models.NewSubscription("", ""), err
+	}
+
+	return models.NewSubscription(sub.Email, sub.Name), nil
 }
 
 func (provider *Provider) RemoveSubscription(email string) error {

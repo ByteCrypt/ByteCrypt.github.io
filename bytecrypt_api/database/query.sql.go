@@ -9,13 +9,64 @@ import (
 	"context"
 )
 
+const addAdmin = `-- name: AddAdmin :one
+INSERT INTO
+    administrators (
+        id,
+        email,
+        name,
+        username,
+        password,
+        role
+    )
+VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, email, name, username, password, role
+`
+
+type AddAdminParams struct {
+	ID       string
+	Email    string
+	Name     string
+	Username string
+	Password string
+	Role     int32
+}
+
+func (q *Queries) AddAdmin(ctx context.Context, arg AddAdminParams) (Administrator, error) {
+	row := q.db.QueryRow(ctx, addAdmin,
+		arg.ID,
+		arg.Email,
+		arg.Name,
+		arg.Username,
+		arg.Password,
+		arg.Role,
+	)
+	var i Administrator
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Name,
+		&i.Username,
+		&i.Password,
+		&i.Role,
+	)
+	return i, err
+}
+
+const addRole = `-- name: AddRole :one
+INSERT INTO roles (title) VALUES ($1) RETURNING id, title
+`
+
+func (q *Queries) AddRole(ctx context.Context, title string) (Role, error) {
+	row := q.db.QueryRow(ctx, addRole, title)
+	var i Role
+	err := row.Scan(&i.ID, &i.Title)
+	return i, err
+}
+
 const addSubscription = `-- name: AddSubscription :one
-INSERT INTO subscriptions (
-    email, name
-) VALUES (
-    $1, $2
-)
-RETURNING id, email, name
+INSERT INTO
+    subscriptions (email, name)
+VALUES ($1, $2) RETURNING id, email, name
 `
 
 type AddSubscriptionParams struct {
@@ -30,9 +81,26 @@ func (q *Queries) AddSubscription(ctx context.Context, arg AddSubscriptionParams
 	return i, err
 }
 
+const deleteAdmin = `-- name: DeleteAdmin :exec
+DELETE FROM administrators WHERE id = $1
+`
+
+func (q *Queries) DeleteAdmin(ctx context.Context, id string) error {
+	_, err := q.db.Exec(ctx, deleteAdmin, id)
+	return err
+}
+
+const deleteRole = `-- name: DeleteRole :exec
+DELETE FROM roles WHERE title = $1
+`
+
+func (q *Queries) DeleteRole(ctx context.Context, title string) error {
+	_, err := q.db.Exec(ctx, deleteRole, title)
+	return err
+}
+
 const deleteSubscriptionEmail = `-- name: DeleteSubscriptionEmail :exec
-DELETE FROM subscriptions 
-WHERE email = $1
+DELETE FROM subscriptions WHERE email = $1
 `
 
 func (q *Queries) DeleteSubscriptionEmail(ctx context.Context, email string) error {
@@ -41,8 +109,7 @@ func (q *Queries) DeleteSubscriptionEmail(ctx context.Context, email string) err
 }
 
 const deleteSubscriptionId = `-- name: DeleteSubscriptionId :exec
-DELETE FROM subscriptions 
-WHERE id = $1
+DELETE FROM subscriptions WHERE id = $1
 `
 
 func (q *Queries) DeleteSubscriptionId(ctx context.Context, id int64) error {
@@ -50,12 +117,119 @@ func (q *Queries) DeleteSubscriptionId(ctx context.Context, id int64) error {
 	return err
 }
 
-const getSubscription = `-- name: GetSubscription :many
+const getAdminByEmail = `-- name: GetAdminByEmail :one
+SELECT id, email, name, username, password, role FROM administrators WHERE email = $1
+`
+
+func (q *Queries) GetAdminByEmail(ctx context.Context, email string) (Administrator, error) {
+	row := q.db.QueryRow(ctx, getAdminByEmail, email)
+	var i Administrator
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Name,
+		&i.Username,
+		&i.Password,
+		&i.Role,
+	)
+	return i, err
+}
+
+const getAdminById = `-- name: GetAdminById :one
+SELECT id, email, name, username, password, role FROM administrators WHERE id = $1
+`
+
+func (q *Queries) GetAdminById(ctx context.Context, id string) (Administrator, error) {
+	row := q.db.QueryRow(ctx, getAdminById, id)
+	var i Administrator
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Name,
+		&i.Username,
+		&i.Password,
+		&i.Role,
+	)
+	return i, err
+}
+
+const getAdminByUsername = `-- name: GetAdminByUsername :one
+SELECT id, email, name, username, password, role FROM administrators WHERE username = $1
+`
+
+func (q *Queries) GetAdminByUsername(ctx context.Context, username string) (Administrator, error) {
+	row := q.db.QueryRow(ctx, getAdminByUsername, username)
+	var i Administrator
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Name,
+		&i.Username,
+		&i.Password,
+		&i.Role,
+	)
+	return i, err
+}
+
+const getAdmins = `-- name: GetAdmins :many
+SELECT id, email, name, username, password, role FROM administrators
+`
+
+func (q *Queries) GetAdmins(ctx context.Context) ([]Administrator, error) {
+	rows, err := q.db.Query(ctx, getAdmins)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Administrator
+	for rows.Next() {
+		var i Administrator
+		if err := rows.Scan(
+			&i.ID,
+			&i.Email,
+			&i.Name,
+			&i.Username,
+			&i.Password,
+			&i.Role,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getSubscriptionByEmail = `-- name: GetSubscriptionByEmail :one
+SELECT id, email, name FROM subscriptions WHERE email = $1
+`
+
+func (q *Queries) GetSubscriptionByEmail(ctx context.Context, email string) (Subscription, error) {
+	row := q.db.QueryRow(ctx, getSubscriptionByEmail, email)
+	var i Subscription
+	err := row.Scan(&i.ID, &i.Email, &i.Name)
+	return i, err
+}
+
+const getSubscriptionById = `-- name: GetSubscriptionById :one
+SELECT id, email, name FROM subscriptions WHERE id = $1
+`
+
+func (q *Queries) GetSubscriptionById(ctx context.Context, id int64) (Subscription, error) {
+	row := q.db.QueryRow(ctx, getSubscriptionById, id)
+	var i Subscription
+	err := row.Scan(&i.ID, &i.Email, &i.Name)
+	return i, err
+}
+
+const getSubscriptions = `-- name: GetSubscriptions :many
 SELECT id, email, name FROM subscriptions
 `
 
-func (q *Queries) GetSubscription(ctx context.Context) ([]Subscription, error) {
-	rows, err := q.db.Query(ctx, getSubscription)
+func (q *Queries) GetSubscriptions(ctx context.Context) ([]Subscription, error) {
+	rows, err := q.db.Query(ctx, getSubscriptions)
 	if err != nil {
 		return nil, err
 	}
@@ -74,26 +248,117 @@ func (q *Queries) GetSubscription(ctx context.Context) ([]Subscription, error) {
 	return items, nil
 }
 
-const getSubscriptionEmail = `-- name: GetSubscriptionEmail :one
-SELECT id, email, name FROM subscriptions
-WHERE email = $1
+const updateAdminEmail = `-- name: UpdateAdminEmail :one
+UPDATE administrators SET email = $2 WHERE id = $1 RETURNING id, email, name, username, password, role
 `
 
-func (q *Queries) GetSubscriptionEmail(ctx context.Context, email string) (Subscription, error) {
-	row := q.db.QueryRow(ctx, getSubscriptionEmail, email)
-	var i Subscription
-	err := row.Scan(&i.ID, &i.Email, &i.Name)
+type UpdateAdminEmailParams struct {
+	ID    string
+	Email string
+}
+
+func (q *Queries) UpdateAdminEmail(ctx context.Context, arg UpdateAdminEmailParams) (Administrator, error) {
+	row := q.db.QueryRow(ctx, updateAdminEmail, arg.ID, arg.Email)
+	var i Administrator
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Name,
+		&i.Username,
+		&i.Password,
+		&i.Role,
+	)
 	return i, err
 }
 
-const getSubscriptionId = `-- name: GetSubscriptionId :one
-SELECT id, email, name FROM subscriptions
-WHERE id = $1
+const updateAdminName = `-- name: UpdateAdminName :one
+UPDATE administrators SET name = $2 WHERE id = $1 RETURNING id, email, name, username, password, role
 `
 
-func (q *Queries) GetSubscriptionId(ctx context.Context, id int64) (Subscription, error) {
-	row := q.db.QueryRow(ctx, getSubscriptionId, id)
-	var i Subscription
-	err := row.Scan(&i.ID, &i.Email, &i.Name)
+type UpdateAdminNameParams struct {
+	ID   string
+	Name string
+}
+
+func (q *Queries) UpdateAdminName(ctx context.Context, arg UpdateAdminNameParams) (Administrator, error) {
+	row := q.db.QueryRow(ctx, updateAdminName, arg.ID, arg.Name)
+	var i Administrator
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Name,
+		&i.Username,
+		&i.Password,
+		&i.Role,
+	)
+	return i, err
+}
+
+const updateAdminPassword = `-- name: UpdateAdminPassword :one
+UPDATE administrators SET password = $2 WHERE id = $1 RETURNING id, email, name, username, password, role
+`
+
+type UpdateAdminPasswordParams struct {
+	ID       string
+	Password string
+}
+
+func (q *Queries) UpdateAdminPassword(ctx context.Context, arg UpdateAdminPasswordParams) (Administrator, error) {
+	row := q.db.QueryRow(ctx, updateAdminPassword, arg.ID, arg.Password)
+	var i Administrator
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Name,
+		&i.Username,
+		&i.Password,
+		&i.Role,
+	)
+	return i, err
+}
+
+const updateAdminRole = `-- name: UpdateAdminRole :one
+UPDATE administrators SET role = $2 WHERE id = $1 RETURNING id, email, name, username, password, role
+`
+
+type UpdateAdminRoleParams struct {
+	ID   string
+	Role int32
+}
+
+func (q *Queries) UpdateAdminRole(ctx context.Context, arg UpdateAdminRoleParams) (Administrator, error) {
+	row := q.db.QueryRow(ctx, updateAdminRole, arg.ID, arg.Role)
+	var i Administrator
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Name,
+		&i.Username,
+		&i.Password,
+		&i.Role,
+	)
+	return i, err
+}
+
+const updateAdminUsername = `-- name: UpdateAdminUsername :one
+UPDATE administrators SET username = $2 WHERE id = $1 RETURNING id, email, name, username, password, role
+`
+
+type UpdateAdminUsernameParams struct {
+	ID       string
+	Username string
+}
+
+func (q *Queries) UpdateAdminUsername(ctx context.Context, arg UpdateAdminUsernameParams) (Administrator, error) {
+	row := q.db.QueryRow(ctx, updateAdminUsername, arg.ID, arg.Username)
+	var i Administrator
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.Name,
+		&i.Username,
+		&i.Password,
+		&i.Role,
+	)
 	return i, err
 }

@@ -4,6 +4,20 @@
 
 package database
 
+type Administrator struct {
+	ID       string
+	Email    string
+	Name     string
+	Username string
+	Password string
+	Role     int32
+}
+
+type Role struct {
+	ID    int32
+	Title string
+}
+
 type Subscription struct {
 	ID    int64
 	Email string
