@@ -1,6 +1,6 @@
 package utils
 
-type Role uint8
+type Role int32
 
 const (
 	Administrator Role = 0
