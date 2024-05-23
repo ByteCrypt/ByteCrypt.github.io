@@ -71,3 +71,9 @@ DELETE FROM roles WHERE title = $1;
 
 -- name: DeleteRoleById :exec
 DELETE FROM roles WHERE id = $1;
+
+-- name: GetRoleById :one
+SELECT * FROM roles WHERE id = $1;
+
+-- name: GetRoleByTitle :one
+SELECT * FROM roles WHERE title = $1;
