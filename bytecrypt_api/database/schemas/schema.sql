@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS subscriptions (
 );
 
 CREATE TABLE IF NOT EXISTS roles (
-    id SERIAL,
+    id INT UNIQUE NOT NULL,
     title text NOT NULL UNIQUE,
     PRIMARY KEY (id)
 );

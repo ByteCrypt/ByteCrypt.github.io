@@ -18,25 +18,31 @@ func main() {
 	defer backend.Shutdown()
 	go processInput(backend)
 
+	initServer(backend)
+
+	<-backend.Context.Done()
+}
+
+func initServer(backend *utils.Backend) {
+	// Init Mux
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/api/v1/subscribe", v1_controllers.SubscribeHandler(backend))
-	mux.HandleFunc("/api/v1/unsubscribe", v1_controllers.UnsubscribeHandler(backend))
+	// ------ Set up path functions
+	mux.HandleFunc(string(v1_controllers.SubscribePath), v1_controllers.SubscribeHandler(backend))
+	mux.HandleFunc(string(v1_controllers.UnsubscribePath), v1_controllers.UnsubscribeHandler(backend))
+	mux.HandleFunc(string(v1_controllers.AdminLoginPath), v1_controllers.AdminLoginHandler(backend))
+
 	server := &http.Server{
 		Addr:    os.Getenv(string(utils.BackendAddress)),
 		Handler: mux,
 	}
-
 	backend.Server = server
-
 	go func() {
 		if err := http.ListenAndServe(os.Getenv(string(utils.BackendAddress)), mux); err != nil && err != http.ErrServerClosed {
 			fmt.Println("Error starting on server: ", err)
 			backend.Cancel()
 		}
 	}()
-
-	<-backend.Context.Done()
 }
 
 // Processes the input given by the user from the backend input buffer

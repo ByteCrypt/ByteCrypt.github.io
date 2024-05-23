@@ -15,6 +15,10 @@ func (provider *Provider) ValidateEmail(email string) error {
 		return err
 	}
 
+	if !emailExp.MatchString(email) {
+		return fmt.Errorf("email is invalid: %s", email)
+	}
+
 	parts := strings.Split(email, "@")
 	if len(parts) != 2 {
 		return fmt.Errorf("email is not correctly formatted: %s", email)
@@ -24,10 +28,6 @@ func (provider *Provider) ValidateEmail(email string) error {
 	mx, err := net.LookupMX(domain)
 	if err != nil || len(mx) == 0 {
 		return fmt.Errorf("email domain is invalid %s", email)
-	}
-
-	if !emailExp.MatchString(email) {
-		return fmt.Errorf("email is invalid: %s", email)
 	}
 
 	return nil

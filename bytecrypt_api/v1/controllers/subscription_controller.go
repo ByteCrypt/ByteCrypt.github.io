@@ -10,13 +10,6 @@ import (
 	"bytecrypt_api/v1/models"
 )
 
-type Path string
-
-const (
-	SubscribePath   Path = "/api/v1/subscribe"
-	UnsubscribePath Path = "/api/v1/unsubscribe"
-)
-
 func SubscribeHandler(backend *utils.Backend) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		if request.URL.Path != string(SubscribePath) {

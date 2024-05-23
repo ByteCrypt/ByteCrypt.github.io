@@ -3,5 +3,14 @@ package utils
 type Role int32
 
 const (
-	Administrator Role = 0
+	InvalidRole Role = 0
+	CoreAdmin   Role = 1
 )
+
+var Roles = []Role{
+	CoreAdmin,
+}
+
+var RoleMap = map[Role]string{
+	CoreAdmin: "Core Administrator",
+}

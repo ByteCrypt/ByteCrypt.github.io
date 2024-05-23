@@ -1,3 +1,4 @@
+-- Subscriptions
 -- name: GetSubscriptions :many
 SELECT * FROM subscriptions;
 
@@ -18,6 +19,7 @@ DELETE FROM subscriptions WHERE id = $1;
 -- name: DeleteSubscriptionEmail :exec
 DELETE FROM subscriptions WHERE email = $1;
 
+-- Administrators
 -- name: AddAdmin :one
 INSERT INTO
     administrators (
@@ -60,8 +62,12 @@ UPDATE administrators SET username = $2 WHERE id = $1 RETURNING *;
 -- name: UpdateAdminPassword :one
 UPDATE administrators SET password = $2 WHERE id = $1 RETURNING *;
 
+-- Roles
 -- name: AddRole :one
-INSERT INTO roles (title) VALUES ($1) RETURNING *;
+INSERT INTO roles (id, title) VALUES ($1, $2) RETURNING *;
 
--- name: DeleteRole :exec
+-- name: DeleteRoleByTitle :exec
 DELETE FROM roles WHERE title = $1;
+
+-- name: DeleteRoleById :exec
+DELETE FROM roles WHERE id = $1;

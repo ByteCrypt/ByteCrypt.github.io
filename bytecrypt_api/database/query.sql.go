@@ -31,6 +31,7 @@ type AddAdminParams struct {
 	Role     int32
 }
 
+// Administrators
 func (q *Queries) AddAdmin(ctx context.Context, arg AddAdminParams) (Administrator, error) {
 	row := q.db.QueryRow(ctx, addAdmin,
 		arg.ID,
@@ -53,11 +54,17 @@ func (q *Queries) AddAdmin(ctx context.Context, arg AddAdminParams) (Administrat
 }
 
 const addRole = `-- name: AddRole :one
-INSERT INTO roles (title) VALUES ($1) RETURNING id, title
+INSERT INTO roles (id, title) VALUES ($1, $2) RETURNING id, title
 `
 
-func (q *Queries) AddRole(ctx context.Context, title string) (Role, error) {
-	row := q.db.QueryRow(ctx, addRole, title)
+type AddRoleParams struct {
+	ID    int32
+	Title string
+}
+
+// Roles
+func (q *Queries) AddRole(ctx context.Context, arg AddRoleParams) (Role, error) {
+	row := q.db.QueryRow(ctx, addRole, arg.ID, arg.Title)
 	var i Role
 	err := row.Scan(&i.ID, &i.Title)
 	return i, err
@@ -90,12 +97,21 @@ func (q *Queries) DeleteAdmin(ctx context.Context, id string) error {
 	return err
 }
 
-const deleteRole = `-- name: DeleteRole :exec
+const deleteRoleById = `-- name: DeleteRoleById :exec
+DELETE FROM roles WHERE id = $1
+`
+
+func (q *Queries) DeleteRoleById(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, deleteRoleById, id)
+	return err
+}
+
+const deleteRoleByTitle = `-- name: DeleteRoleByTitle :exec
 DELETE FROM roles WHERE title = $1
 `
 
-func (q *Queries) DeleteRole(ctx context.Context, title string) error {
-	_, err := q.db.Exec(ctx, deleteRole, title)
+func (q *Queries) DeleteRoleByTitle(ctx context.Context, title string) error {
+	_, err := q.db.Exec(ctx, deleteRoleByTitle, title)
 	return err
 }
 
@@ -228,6 +244,7 @@ const getSubscriptions = `-- name: GetSubscriptions :many
 SELECT id, email, name FROM subscriptions
 `
 
+// Subscriptions
 func (q *Queries) GetSubscriptions(ctx context.Context) ([]Subscription, error) {
 	rows, err := q.db.Query(ctx, getSubscriptions)
 	if err != nil {
