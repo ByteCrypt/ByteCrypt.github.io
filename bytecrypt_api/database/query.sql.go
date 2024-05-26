@@ -218,6 +218,28 @@ func (q *Queries) GetAdmins(ctx context.Context) ([]Administrator, error) {
 	return items, nil
 }
 
+const getRoleById = `-- name: GetRoleById :one
+SELECT id, title FROM roles WHERE id = $1
+`
+
+func (q *Queries) GetRoleById(ctx context.Context, id int32) (Role, error) {
+	row := q.db.QueryRow(ctx, getRoleById, id)
+	var i Role
+	err := row.Scan(&i.ID, &i.Title)
+	return i, err
+}
+
+const getRoleByTitle = `-- name: GetRoleByTitle :one
+SELECT id, title FROM roles WHERE title = $1
+`
+
+func (q *Queries) GetRoleByTitle(ctx context.Context, title string) (Role, error) {
+	row := q.db.QueryRow(ctx, getRoleByTitle, title)
+	var i Role
+	err := row.Scan(&i.ID, &i.Title)
+	return i, err
+}
+
 const getSubscriptionByEmail = `-- name: GetSubscriptionByEmail :one
 SELECT id, email, name FROM subscriptions WHERE email = $1
 `

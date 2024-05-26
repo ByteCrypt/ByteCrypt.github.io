@@ -16,6 +16,9 @@ func InitRoles(backend *utils.Backend) error {
 
 	var errs error
 	for _, role := range utils.Roles {
+		if _, err := provider.Queries.GetRoleById(context.Background(), int32(role)); err == nil {
+			continue
+		}
 		add := database.AddRoleParams{
 			ID:    int32(role),
 			Title: utils.RoleMap[role],
@@ -42,6 +45,24 @@ func NewRoleParams(role utils.Role) (database.AddRoleParams, error) {
 		ID:    int32(role),
 		Title: title,
 	}, nil
+}
+
+func (provider *Provider) GetRoleById(id int32) (utils.Role, error) {
+	role, err := provider.Queries.GetRoleById(context.Background(), id)
+	if err != nil {
+		return utils.InvalidRole, err
+	}
+
+	return utils.Role(role.ID), nil
+}
+
+func (provider *Provider) GetRoleByTitle(title string) (utils.Role, error) {
+	role, err := provider.Queries.GetRoleByTitle(context.Background(), title)
+	if err != nil {
+		return utils.InvalidRole, err
+	}
+
+	return utils.Role(role.ID), nil
 }
 
 func (provider *Provider) AddRole(role utils.Role) error {
