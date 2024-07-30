@@ -1,11 +1,8 @@
-import "./App.css";
+import Header from "@/components/Header";
+import Content from "@/components/Content";
+import Footer from "@/components/Footer";
 
-import Header from "./components/Header";
-import Content from "./components/Content";
-import Footer from "./components/Footer";
-
-export default function App() {
-
+export default function Home() {
     return (
         <>
             <div className="text-white fixed top-0 w-full flex flex-col">

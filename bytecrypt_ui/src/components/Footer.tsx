@@ -1,7 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXTwitter } from "@fortawesome/free-brands-svg-icons";
-import { faYoutube } from "@fortawesome/free-brands-svg-icons";
-import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import { faXTwitter, faYoutube, faGithub } from "@fortawesome/free-brands-svg-icons";
+import Link from "next/link";
 
 export default function Footer() {
 
@@ -10,10 +9,10 @@ export default function Footer() {
             <div className="flex flex-col">
                 <p className="text-base font-bold text-center sm:text-left">About Us:</p>
                 <div className="text-sm ml-2 flex flex-row sm:flex-col gap-2 sm:gap-0 flex-wrap justify-center">
-                    <a href="#">Help</a>
-                    <a href="#">Contact Us</a>
-                    <a href="#">User Agreement</a>
-                    <a href="#">Privacy Policy</a>
+                    <Link className="link" href="/help">Help</Link>
+                    <Link className="link" href="/contact">Contact Us</Link>
+                    <Link className="link" href="/userAgreement">User Agreement</Link>
+                    <Link className="link" href="/privacyPolicy">Privacy Policy</Link>
                 </div>
             </div>
 

@@ -1,5 +1,7 @@
-
+import User from "./User";
 import ByteCrypt_Logo from "../images/ByteCrypt_Logo.svg";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function Header() {
     const buttonClick = () => {
@@ -8,17 +10,18 @@ export default function Header() {
 
     return (
         <>
-            <a className="flex" href="#">
-                <img className="h-[30px] w-auto" src={ByteCrypt_Logo} alt="Bytecrypt Logo" />
+            <Link className="link flex" href="/">
+                <Image className="h-[30px] w-auto" src={ByteCrypt_Logo} alt="Bytecrypt Logo" />
 
                 <p className="text-2xl italic font-extrabold">
                     <em>BYTECRYPT</em>
                 </p>
-            </a>
+            </Link>
             <div className="flex text-sm gap-2 items-center">
-                <a href="#">About Us</a>
-                <a href="#">Info</a>
-                <button className="h-7 w-24 rounded-3xl bg-blue-500 align-top" onClick={buttonClick}>Get Started</button>
+                <Link className="link" href="/about">About Us</Link>
+                <Link className="link" href="/info">Info</Link>
+                <button className="h-7 w-24 rounded-3xl bg-violet-700 hover:bg-blue-500 align-top" onClick={buttonClick}>Get Started</button>
+                <User />
             </div>
         </>
     );

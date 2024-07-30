@@ -1,1 +1,0 @@
-# Website for [ByteCrypt](https://github.com/ExtremelyRyan/ByteCrypt)

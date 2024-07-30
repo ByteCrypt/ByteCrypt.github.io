@@ -1,10 +1,12 @@
 import { useState } from "react";
 import ByteCryptLogo from "../images/ByteCrypt_Logo.svg";
+import Image from "next/image";
+import { BackendAddress, Path } from "@/common/path";
+import { HttpHeader, Method } from "@/common/utils";
 
 export default function Content() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
-    // Regex for sanitizing the email
 
     return (
         <>
@@ -37,7 +39,7 @@ export default function Content() {
                     </div>
 
                     <input
-                        className="self-center sm:self-start bg-violet-700 rounded-3xl text-lg mt-3 h-8 w-24"
+                        className="self-center sm:self-start hover:bg-blue-500 bg-violet-700 rounded-3xl text-lg mt-3 h-8 w-24 cursor-pointer"
                         type="button"
                         value="Subscribe"
                         onClick={_ => subscribe(name, email)}
@@ -45,20 +47,21 @@ export default function Content() {
                 </form>
             </div>
 
-            <img className="h-96 w-auto" src={ByteCryptLogo} alt="ByteCrypt Logo" />
+            <Image className="h-96 w-auto" src={ByteCryptLogo} alt="ByteCrypt Logo" />
         </>
     );
 }
 
 function subscribe(name: string, email: string) {
     // https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html
+    // Regex for sanitizing the email
     const sanitizeEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (sanitizeEmail.test(email)) {
-        fetch("http://localhost:5150/api/v1/subscribe", {
-            method: "POST",
+        fetch(`${BackendAddress}${Path.Subscribe}`, {
+            method: Method.Post,
             headers: {
-                "Content-Type": "application/json",
+                [HttpHeader.ContentType]: HttpHeader.ApplicationJson,
             },
             body: JSON.stringify({ name: name, email: email }),
         }).then(response => {
@@ -73,13 +76,14 @@ function subscribe(name: string, email: string) {
 
 function unsubscribe(email: string) {
     // https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html
+    // Regex for sanitizing the email
     const sanitizeEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (sanitizeEmail.test(email)) {
-        fetch("http://localhost:5150/api/v1/unsubscribe", {
-            method: "POST",
+        fetch(`${BackendAddress}${Path.Unsubscribe}`, {
+            method: Method.Post,
             headers: {
-                "Content-Type": "application/json",
+                [HttpHeader.ContentType]: HttpHeader.ApplicationJson,
             },
             body: JSON.stringify({ email: email }),
         }).then(response => {

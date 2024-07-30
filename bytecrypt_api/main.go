@@ -30,7 +30,7 @@ func initServer(backend *utils.Backend) {
 	// ------ Set up path functions
 	mux.HandleFunc(string(v1_controllers.SubscribePath), v1_controllers.SubscribeHandler(backend))
 	mux.HandleFunc(string(v1_controllers.UnsubscribePath), v1_controllers.UnsubscribeHandler(backend))
-	mux.HandleFunc(string(v1_controllers.AdminLoginPath), v1_controllers.AdminLoginHandler(backend))
+	mux.HandleFunc(string(v1_controllers.LoginPath), v1_controllers.LoginHandler(backend))
 
 	server := &http.Server{
 		Addr:    os.Getenv(string(utils.BackendAddress)),
@@ -109,8 +109,6 @@ func processInputDatabase(backend *utils.Backend, inputList []string, input stri
 			backend.Output <- "        [test | -t]"
 			backend.Output <- "    - Query (UNDER CONSTRUCTION): Perform a database query"
 			backend.Output <- "        [query | -q]"
-			backend.Output <- "    - Seed: Seed operations"
-			backend.Output <- "        [seed]"
 		}
 	case "test", "-t":
 		{
@@ -144,93 +142,6 @@ func processInputDatabase(backend *utils.Backend, inputList []string, input stri
 					backend.Output <- input
 				}
 			}
-		}
-
-	case "seed":
-		if len(inputList) < 3 {
-			backend.Output <- "Insufficient number of items passed:"
-			backend.Output <- "  Expected: database seed [argument]"
-			backend.Output <- "  - For help, use: database seed help"
-			return
-		}
-
-		switch inputList[2] {
-		case "help", "-h":
-			{
-				backend.Output <- "Use:"
-				backend.Output <- "  database seed [argument]"
-				backend.Output <- "  - Argument List:"
-				backend.Output <- "    - Help: Shows this list"
-				backend.Output <- "        [help | -h]"
-				backend.Output <- "    - Initialize: Seed the database with initial values"
-				backend.Output <- "        [initialize | init | -i | add | -a]"
-				backend.Output <- "    - Delete: Remove the seeded values from the database"
-				backend.Output <- "        [delete | -d | remove | -r]"
-				backend.Output <- "    - List: List all seeded values in the database"
-				backend.Output <- "        [list | ls | -l]"
-			}
-
-		case "initialize", "init", "-i", "add", "-a":
-			{
-				backend.Output <- "\n-- Test: Attempting to seed the database"
-				provider, err := services.NewProvider(backend)
-				if err != nil {
-					backend.Output <- fmt.Sprintf("Could not create connection to database: %s", err.Error())
-					return
-				}
-				defer provider.CloseDatabaseConnection(backend)
-
-				err = provider.SeedDatabase()
-				if err != nil {
-					backend.Output <- err.Error()
-					return
-				}
-				backend.Output <- "-- Test: Database seeded successfully"
-			}
-
-		case "delete", "-d", "remove", "-r":
-			{
-				backend.Output <- "\n-- Test: Attempting to remove database seed"
-				provider, err := services.NewProvider(backend)
-				if err != nil {
-					backend.Output <- fmt.Sprintf("Could not create connection to database: %s", err.Error())
-					return
-				}
-				defer provider.CloseDatabaseConnection(backend)
-
-				err = provider.DeleteDatabaseSeed()
-				if err != nil {
-					backend.Output <- err.Error()
-					return
-				}
-				backend.Output <- "-- Test: Database seed successfully removed"
-			}
-
-		case "list", "ls", "-l":
-			{
-				{
-					backend.Output <- "\n-- Test: Attempting to remove database seed"
-					provider, err := services.NewProvider(backend)
-					if err != nil {
-						backend.Output <- fmt.Sprintf("Could not create connection to database: %s", err.Error())
-						return
-					}
-					defer provider.CloseDatabaseConnection(backend)
-
-					seeds, err := provider.GetAllSeeded()
-					if err != nil {
-						backend.Output <- err.Error()
-					}
-					for i, seed := range seeds {
-						backend.Output <- fmt.Sprintf("Seed [%d] == Name: %s -- Email: %s", i+1, seed.Name, seed.Email)
-					}
-				}
-			}
-
-		default:
-			backend.Output <- fmt.Sprintf("Invalid input: %s", inputList[2])
-			backend.Output <- "  Expected: [help | add | delete | list]"
-			backend.Output <- "  - For help, use: database seed help"
 		}
 
 	default:

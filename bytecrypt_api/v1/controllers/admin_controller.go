@@ -9,9 +9,9 @@ import (
 	"net/http"
 )
 
-func AdminLoginHandler(backend *utils.Backend) http.HandlerFunc {
+func LoginHandler(backend *utils.Backend) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		if request.URL.Path != string(AdminLoginPath) {
+		if request.URL.Path != string(LoginPath) {
 			http.NotFound(writer, request)
 			return
 		}
