@@ -22,7 +22,7 @@ DELETE FROM subscriptions WHERE email = $1;
 -- Administrators
 -- name: AddAdmin :one
 INSERT INTO
-    administrators (
+    users (
         id,
         email,
         name,
@@ -33,34 +33,34 @@ INSERT INTO
 VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
 
 -- name: DeleteAdmin :exec
-DELETE FROM administrators WHERE id = $1;
+DELETE FROM users WHERE id = $1;
 
 -- name: GetAdmins :many
-SELECT * FROM administrators;
+SELECT * FROM users;
 
 -- name: GetAdminById :one
-SELECT * FROM administrators WHERE id = $1;
+SELECT * FROM users WHERE id = $1;
 
 -- name: GetAdminByEmail :one
-SELECT * FROM administrators WHERE email = $1;
+SELECT * FROM users WHERE email = $1;
 
 -- name: GetAdminByUsername :one
-SELECT * FROM administrators WHERE username = $1;
+SELECT * FROM users WHERE username = $1;
 
 -- name: UpdateAdminRole :one
-UPDATE administrators SET role = $2 WHERE id = $1 RETURNING *;
+UPDATE users SET role = $2 WHERE id = $1 RETURNING *;
 
 -- name: UpdateAdminEmail :one
-UPDATE administrators SET email = $2 WHERE id = $1 RETURNING *;
+UPDATE users SET email = $2 WHERE id = $1 RETURNING *;
 
 -- name: UpdateAdminName :one
-UPDATE administrators SET name = $2 WHERE id = $1 RETURNING *;
+UPDATE users SET name = $2 WHERE id = $1 RETURNING *;
 
 -- name: UpdateAdminUsername :one
-UPDATE administrators SET username = $2 WHERE id = $1 RETURNING *;
+UPDATE users SET username = $2 WHERE id = $1 RETURNING *;
 
 -- name: UpdateAdminPassword :one
-UPDATE administrators SET password = $2 WHERE id = $1 RETURNING *;
+UPDATE users SET password = $2 WHERE id = $1 RETURNING *;
 
 -- Roles
 -- name: AddRole :one

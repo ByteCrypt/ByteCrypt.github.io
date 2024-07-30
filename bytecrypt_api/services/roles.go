@@ -66,6 +66,15 @@ func (provider *Provider) GetRoleByTitle(title string) (utils.Role, error) {
 }
 
 func (provider *Provider) AddRole(role utils.Role) error {
+	roleParams := database.AddRoleParams{
+		ID:    int32(role),
+		Title: utils.RoleMap[role],
+	}
+
+	_, err := provider.Queries.AddRole(context.Background(), roleParams)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

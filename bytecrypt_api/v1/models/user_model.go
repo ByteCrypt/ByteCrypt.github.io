@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type Administrator struct {
+type User struct {
 	Id       string
 	Username string
 	Name     string
@@ -16,17 +16,13 @@ type Administrator struct {
 	Role     utils.Role
 }
 
-type AdminJson struct {
-	Id       string
+type UserJson struct {
 	Username string
-	Name     string
-	Email    string
 	Password string
-	Role     int32
 }
 
-func NewAdmin(username, name, email, password string, role utils.Role) Administrator {
-	return Administrator{
+func NewUser(username, name, email, password string, role utils.Role) User {
+	return User{
 		Id:       uuid.NewString(),
 		Username: username,
 		Name:     name,
@@ -36,28 +32,28 @@ func NewAdmin(username, name, email, password string, role utils.Role) Administr
 	}
 }
 
-func BlankAdmin() Administrator {
-	return Administrator{}
+func BlankUser() User {
+	return User{}
 }
 
-func ValidateAdmin(admin *Administrator) error {
+func ValidateUser(user *User) error {
 	var err error
-	if admin.Id == "" {
+	if user.Id == "" {
 		err = fmt.Errorf("%w; %s", err, "cannot provide an empty id")
 	}
-	if admin.Email == "" {
+	if user.Email == "" {
 		err = fmt.Errorf("%w; %s", err, "cannot provide an empty email")
 	}
-	if admin.Name == "" {
+	if user.Name == "" {
 		err = fmt.Errorf("%w; %s", err, "cannot provide an empty name")
 	}
-	if admin.Username == "" {
+	if user.Username == "" {
 		err = fmt.Errorf("%w; %s", err, "cannot provide an empty username")
 	}
-	if admin.Password == "" {
+	if user.Password == "" {
 		err = fmt.Errorf("%w; %s", err, "cannot provide an empty password")
 	}
-	if admin.Role == utils.InvalidRole {
+	if user.Role == utils.InvalidRole {
 		err = fmt.Errorf("%w; %s", err, "cannot provide an erroneous role")
 	}
 
@@ -67,7 +63,7 @@ func ValidateAdmin(admin *Administrator) error {
 	return err
 }
 
-func (admin *Administrator) ToString() string {
+func (user *User) ToString() string {
 	return fmt.Sprintf("ID: %s\n\tUsername: %s\n\tName: %s\n\tEmail: %s\n\tRole: %s",
-		admin.Id, admin.Username, admin.Name, admin.Email, utils.RoleMap[admin.Role])
+		user.Id, user.Username, user.Name, user.Email, utils.RoleMap[user.Role])
 }

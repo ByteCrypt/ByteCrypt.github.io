@@ -9,8 +9,8 @@ import (
 	"fmt"
 )
 
-func NewAddAdminParams(id, email, name, username, password string, role utils.Role) (database.AddAdminParams, error) {
-	admin := database.AddAdminParams{
+func NewAddUserParams(id, email, name, username, password string, role utils.Role) (database.AddAdminParams, error) {
+	user := database.AddAdminParams{
 		ID:       id,
 		Email:    email,
 		Name:     name,
@@ -19,83 +19,83 @@ func NewAddAdminParams(id, email, name, username, password string, role utils.Ro
 		Role:     int32(role),
 	}
 
-	if err := ValidateAdminParams(&admin); err != nil {
+	if err := ValidateUserParams(&user); err != nil {
 		return database.AddAdminParams{}, err
 	}
 
-	return admin, nil
+	return user, nil
 }
 
-func ValidateAdminParams(admin *database.AddAdminParams) error {
-	if admin.ID == "" {
+func ValidateUserParams(user *database.AddAdminParams) error {
+	if user.ID == "" {
 		return errors.New("cannot provide an empty id")
 	}
-	if admin.Email == "" {
+	if user.Email == "" {
 		return errors.New("cannot provide an empty email")
 	}
-	if admin.Name == "" {
+	if user.Name == "" {
 		return errors.New("cannot provide an empty name")
 	}
-	if admin.Username == "" {
+	if user.Username == "" {
 		return errors.New("cannot provide an empty username")
 	}
-	if admin.Password == "" {
+	if user.Password == "" {
 		return errors.New("cannot provide an empty password")
 	}
-	if utils.Role(admin.Role) == utils.InvalidRole {
+	if utils.Role(user.Role) == utils.InvalidRole {
 		return errors.New("cannot provide an erroneous role")
 	}
 
 	return nil
 }
 
-func ConvertAdminToDb(admin models.Administrator) (database.AddAdminParams, error) {
-	dbadmin := database.AddAdminParams{
-		ID:       admin.Id,
-		Email:    admin.Email,
-		Name:     admin.Name,
-		Username: admin.Username,
-		Password: admin.Password,
-		Role:     int32(admin.Role),
+func ConvertUserToDb(user models.User) (database.AddAdminParams, error) {
+	dbUser := database.AddAdminParams{
+		ID:       user.Id,
+		Email:    user.Email,
+		Name:     user.Name,
+		Username: user.Username,
+		Password: user.Password,
+		Role:     int32(user.Role),
 	}
 
-	if err := ValidateAdminParams(&dbadmin); err != nil {
+	if err := ValidateUserParams(&dbUser); err != nil {
 		return database.AddAdminParams{}, err
 	}
 
-	return dbadmin, nil
+	return dbUser, nil
 }
 
-func ConvertDbToAdmin(dbadmin database.Administrator) (models.Administrator, error) {
-	admin := models.Administrator{
-		Id:       dbadmin.ID,
-		Email:    dbadmin.Email,
-		Name:     dbadmin.Name,
-		Username: dbadmin.Username,
-		Password: dbadmin.Password,
-		Role:     utils.Role(dbadmin.Role),
+func ConvertDbToUser(dbUser database.Administrator) (models.User, error) {
+	user := models.User{
+		Id:       dbUser.ID,
+		Email:    dbUser.Email,
+		Name:     dbUser.Name,
+		Username: dbUser.Username,
+		Password: dbUser.Password,
+		Role:     utils.Role(dbUser.Role),
 	}
 
-	if err := models.ValidateAdmin(&admin); err != nil {
-		return models.BlankAdmin(), err
+	if err := models.ValidateUser(&user); err != nil {
+		return models.BlankUser(), err
 	}
 
-	return admin, nil
+	return user, nil
 }
 
-func (provider *Provider) AddAdmin(backend utils.Backend, admin *models.Administrator) error {
+func (provider *Provider) AddUser(backend utils.Backend, admin *models.User) error {
 	// Validate passed email
 	if err := provider.ValidateEmail(admin.Email); err != nil {
 		return err
 	}
 
 	// Validate passed admin struct
-	if err := models.ValidateAdmin(admin); err != nil {
+	if err := models.ValidateUser(admin); err != nil {
 		return err
 	}
 
 	// Verify uniqueness
-	if dbadmin, err := provider.GetAdminByEmail(admin.Email); err == nil {
+	if dbadmin, err := provider.GetUserByEmail(admin.Email); err == nil {
 		if dbadmin.Id == admin.Id {
 			err = fmt.Errorf("%w; %s", err, fmt.Sprintf("an administrator already exists with the id: %s", admin.Id))
 		}
@@ -108,7 +108,7 @@ func (provider *Provider) AddAdmin(backend utils.Backend, admin *models.Administ
 	}
 
 	// Convert to proper struct
-	add, err := ConvertAdminToDb(*admin)
+	add, err := ConvertUserToDb(*admin)
 	if err != nil {
 		return err
 	}
@@ -119,7 +119,7 @@ func (provider *Provider) AddAdmin(backend utils.Backend, admin *models.Administ
 		backend.Log <- utils.NewLog(utils.Warn, fmt.Sprintf("Could not add new admin: %s", err.Error()))
 		return err
 	}
-	*admin, err = ConvertDbToAdmin(dbadmin)
+	*admin, err = ConvertDbToUser(dbadmin)
 	if err != nil {
 		return err
 	}
@@ -128,9 +128,9 @@ func (provider *Provider) AddAdmin(backend utils.Backend, admin *models.Administ
 	return nil
 }
 
-func (provider *Provider) RemoveAdmin(backend utils.Backend, admin *models.Administrator) error {
+func (provider *Provider) RemoveAdmin(backend utils.Backend, admin *models.User) error {
 	// Verify admin exists
-	if _, err := provider.GetAdminById(admin.Id); err == nil {
+	if _, err := provider.GetUserById(admin.Id); err == nil {
 		return fmt.Errorf("an administrator with that id does not exist")
 	}
 
@@ -143,7 +143,7 @@ func (provider *Provider) RemoveAdmin(backend utils.Backend, admin *models.Admin
 	return nil
 }
 
-func (provider *Provider) GetAllAdmins() ([]models.Administrator, error) {
+func (provider *Provider) GetAllAdmins() ([]models.User, error) {
 	// Get all the admins
 	dbadmins, err := provider.Queries.GetAdmins(context.Background())
 	if err != nil {
@@ -151,9 +151,9 @@ func (provider *Provider) GetAllAdmins() ([]models.Administrator, error) {
 	}
 
 	// Convert and return
-	var admins []models.Administrator
+	var admins []models.User
 	for _, dba := range dbadmins {
-		a, err := ConvertDbToAdmin(dba)
+		a, err := ConvertDbToUser(dba)
 		if err != nil {
 			return nil, err
 		}
@@ -163,59 +163,59 @@ func (provider *Provider) GetAllAdmins() ([]models.Administrator, error) {
 	return admins, nil
 }
 
-func (provider *Provider) GetAdminById(id string) (models.Administrator, error) {
+func (provider *Provider) GetUserById(id string) (models.User, error) {
 	// Validate passed id
 	if id == "" {
-		return models.BlankAdmin(), fmt.Errorf("id cannot be blank")
+		return models.BlankUser(), fmt.Errorf("id cannot be blank")
 	}
 
 	// Get dbadmin
 	dbadmin, err := provider.Queries.GetAdminById(context.Background(), id)
 	if err != nil {
-		return models.BlankAdmin(), err
+		return models.BlankUser(), err
 	}
 
-	return ConvertDbToAdmin(dbadmin)
+	return ConvertDbToUser(dbadmin)
 }
 
-func (provider *Provider) GetAdminByEmail(email string) (models.Administrator, error) {
+func (provider *Provider) GetUserByEmail(email string) (models.User, error) {
 	//Validate email
 	if err := provider.ValidateEmail(email); err != nil {
-		return models.BlankAdmin(), err
+		return models.BlankUser(), err
 	}
 
 	// Get dbadmin
 	dbadmin, err := provider.Queries.GetAdminByEmail(context.Background(), email)
 	if err != nil {
-		return models.BlankAdmin(), err
+		return models.BlankUser(), err
 	}
 
-	return ConvertDbToAdmin(dbadmin)
+	return ConvertDbToUser(dbadmin)
 }
 
-func (provider *Provider) GetAdminByUsername(username string) (models.Administrator, error) {
+func (provider *Provider) GetUserByUsername(username string) (models.User, error) {
 	// Validate username
 	if username == "" {
-		return models.BlankAdmin(), fmt.Errorf("username cannot be blank")
+		return models.BlankUser(), fmt.Errorf("username cannot be blank")
 	}
 
 	// Get dbadmin
 	dbadmin, err := provider.Queries.GetAdminByUsername(context.Background(), username)
 	if err != nil {
-		return models.BlankAdmin(), err
+		return models.BlankUser(), err
 	}
 
-	return ConvertDbToAdmin(dbadmin)
+	return ConvertDbToUser(dbadmin)
 }
 
-func (provider *Provider) UpdateAdminEmail(backend *utils.Backend, admin *models.Administrator, email string) error {
+func (provider *Provider) UpdateUserEmail(backend *utils.Backend, admin *models.User, email string) error {
 	// Validate email
 	if err := provider.ValidateEmail(email); err != nil {
 		return err
 	}
 
 	// Verify the administrator exists
-	if _, err := provider.GetAdminById(admin.Id); err != nil {
+	if _, err := provider.GetUserById(admin.Id); err != nil {
 		return err
 	}
 
@@ -231,7 +231,7 @@ func (provider *Provider) UpdateAdminEmail(backend *utils.Backend, admin *models
 	}
 
 	// Convert
-	a, err := ConvertDbToAdmin(dbadmin)
+	a, err := ConvertDbToUser(dbadmin)
 	if err != nil {
 		return err
 	}
@@ -241,14 +241,14 @@ func (provider *Provider) UpdateAdminEmail(backend *utils.Backend, admin *models
 	return nil
 }
 
-func (provider *Provider) UpdateAdminName(backend *utils.Backend, admin *models.Administrator, name string) error {
+func (provider *Provider) UpdateUserName(backend *utils.Backend, admin *models.User, name string) error {
 	// Validate the name
 	if name == "" {
 		return fmt.Errorf("name cannot be empty")
 	}
 
 	// Verify the admin exists
-	if _, err := provider.GetAdminById(admin.Id); err != nil {
+	if _, err := provider.GetUserById(admin.Id); err != nil {
 		return err
 	}
 
@@ -264,7 +264,7 @@ func (provider *Provider) UpdateAdminName(backend *utils.Backend, admin *models.
 	}
 
 	// Convert and return
-	a, err := ConvertDbToAdmin(dbadmin)
+	a, err := ConvertDbToUser(dbadmin)
 	if err != nil {
 		return err
 	}
@@ -274,14 +274,14 @@ func (provider *Provider) UpdateAdminName(backend *utils.Backend, admin *models.
 	return nil
 }
 
-func (provider *Provider) UpdateAdminUsername(backend *utils.Backend, admin *models.Administrator, username string) error {
+func (provider *Provider) UpdateUserUsername(backend *utils.Backend, admin *models.User, username string) error {
 	// Validate username
 	if len(username) == 0 {
 		return fmt.Errorf("username cannot be empty")
 	}
 
 	// Verify the admin exists
-	if _, err := provider.GetAdminById(admin.Id); err != nil {
+	if _, err := provider.GetUserById(admin.Id); err != nil {
 		return err
 	}
 
@@ -295,7 +295,7 @@ func (provider *Provider) UpdateAdminUsername(backend *utils.Backend, admin *mod
 		backend.Log <- utils.NewLog(utils.Warn, fmt.Sprintf("Unable to update administrator <%s> username: %s", admin.Id, err.Error()))
 		return err
 	}
-	a, err := ConvertDbToAdmin(dbadmin)
+	a, err := ConvertDbToUser(dbadmin)
 	if err != nil {
 		return err
 	}
@@ -305,14 +305,14 @@ func (provider *Provider) UpdateAdminUsername(backend *utils.Backend, admin *mod
 	return nil
 }
 
-func (provider *Provider) UpdateAdminPassword(backend *utils.Backend, admin *models.Administrator, password string) error {
+func (provider *Provider) UpdateUserPassword(backend *utils.Backend, admin *models.User, password string) error {
 	// Validate password
 	if len(password) == 0 {
 		return fmt.Errorf("password cannot be empty")
 	}
 
 	// Verify admin exists
-	if _, err := provider.GetAdminById(admin.Id); err != nil {
+	if _, err := provider.GetUserById(admin.Id); err != nil {
 		return err
 	}
 
@@ -326,7 +326,7 @@ func (provider *Provider) UpdateAdminPassword(backend *utils.Backend, admin *mod
 		backend.Log <- utils.NewLog(utils.Warn, fmt.Sprintf("Unable to update administrator <%s> password: %v", admin.Id, err.Error()))
 		return err
 	}
-	a, err := ConvertDbToAdmin(dbadmin)
+	a, err := ConvertDbToUser(dbadmin)
 	if err != nil {
 		return err
 	}
@@ -336,14 +336,14 @@ func (provider *Provider) UpdateAdminPassword(backend *utils.Backend, admin *mod
 	return nil
 }
 
-func (provider *Provider) UpdateAdminRole(backend *utils.Backend, admin *models.Administrator, role utils.Role) error {
+func (provider *Provider) UpdateUserRole(backend *utils.Backend, admin *models.User, role utils.Role) error {
 	// Validate the role
 	if role == utils.InvalidRole {
 		return fmt.Errorf("invalid role passed")
 	}
 
 	// Verify admin exists
-	if _, err := provider.GetAdminById(admin.Id); err != nil {
+	if _, err := provider.GetUserById(admin.Id); err != nil {
 		return err
 	}
 
@@ -357,7 +357,7 @@ func (provider *Provider) UpdateAdminRole(backend *utils.Backend, admin *models.
 		backend.Log <- utils.NewLog(utils.Warn, fmt.Sprintf("Unable to update administrator <%s> role: %v", admin.Id, err.Error()))
 		return err
 	}
-	a, err := ConvertDbToAdmin(dbadmin)
+	a, err := ConvertDbToUser(dbadmin)
 	if err != nil {
 		return err
 	}

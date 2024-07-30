@@ -19,9 +19,9 @@ func LoginHandler(backend *utils.Backend) http.HandlerFunc {
 		switch request.Method {
 		case http.MethodPost:
 			{
-				var sub models.Subscription
+				var user models.UserJson
 
-				err := json.NewDecoder(request.Body).Decode(&sub)
+				err := json.NewDecoder(request.Body).Decode(&user)
 				if err != nil {
 					http.Error(writer, err.Error(), http.StatusBadRequest)
 					return
@@ -34,16 +34,20 @@ func LoginHandler(backend *utils.Backend) http.HandlerFunc {
 				}
 				defer provider.CloseDatabaseConnection(backend)
 
+				// Attempt the log in
+				// Get the user
 				level := utils.Info
 				ok := true
-				message := "Subscription attempt was successful"
-				_, err = provider.AddSubscription(sub)
+				message := "Login attempt was successful"
+				dbUser, err := provider.GetUserByUsername(user.Username)
 				if err != nil {
-					level = utils.Warn
+					level = utils.Error
+					message = "Could not find by that username"
 					ok = false
-					message = fmt.Sprintf("Subscription attempt was unsuccessful: %s", err.Error())
 				}
-				backend.Log <- utils.NewLog(level, fmt.Sprintf("Subscription Attempt: %s::%s -- %s", sub.Name, sub.Email, message))
+
+				backend.Log <- utils.NewLog(level, message)
+				backend.Output <- dbUser.Id
 
 				writer.Header().Set(string(utils.ContentType), string(utils.ApplicationJson))
 				subJson := models.NewSubscriptionResponse(ok, message)
