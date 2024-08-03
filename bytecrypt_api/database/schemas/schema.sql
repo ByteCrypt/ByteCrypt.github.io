@@ -1,23 +1,23 @@
 CREATE TABLE IF NOT EXISTS subscriptions (
-    id bigserial,
-    email text NOT NULL UNIQUE,
-    name text NOT NULL,
+    subscription_id SERIAL,
+    email TEXT NOT NULL UNIQUE,
+    name TEXT,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS roles (
-    id INT UNIQUE NOT NULL,
+    role_id INT UNIQUE NOT NULL,
     title text NOT NULL UNIQUE,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS users (
-    id TEXT NOT NULL UNIQUE,
+    user_id TEXT NOT NULL UNIQUE,
     email TEXT NOT NULL UNIQUE,
-    name TEXT NOT NULL,
+    name TEXT,
     username TEXT NOT NULL UNIQUE,
-    password TEXT NOT NULL,
+    tokens TEXT NOT NULL,
     role INT NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (role) REFERENCES roles (id)
+    PRIMARY KEY (user_id),
+    FOREIGN KEY (role) REFERENCES roles (role_id)
 );

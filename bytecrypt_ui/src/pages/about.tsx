@@ -1,5 +1,8 @@
+import Image from "next/image";
+
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Catstruction from "../images/catstruction.webp";
 
 export default function About() {
     return (
@@ -11,7 +14,8 @@ export default function About() {
                 <hr />
             </div>
             <div className="App flex flex-col justify-between text-3xl text-white h-screen pt-24">
-                <div className="content mx-auto self-start my-10 flex flex-col md:flex-row justify-center">
+                <div className="mx-auto self-start my-10 flex flex-col md:flex-row justify-center">
+                    <Image src={Catstruction} alt="Catstruction" />
                 </div>
 
                 <div className="mt-auto">

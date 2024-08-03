@@ -9,7 +9,7 @@ export default function Login() {
     const [password, setPassword] = useState("");
     const [usernameBorder, setUsernameBorder] = useState("border-slate-800")
     const [passwordBorder, setPasswordBorder] = useState("border-slate-800")
-    const [errorMessage, setErrorMessage] = useState("");
+    const [errorMessage, setErrorMessage] = useState([""]);
     const timer = useRef<NodeJS.Timeout | null>(null);
 
     const setError = () => {
@@ -33,9 +33,9 @@ export default function Login() {
 
         // Display error message
         if (errorMessage.length !== 0) {
-            setErrorMessage(errorMessage.join(" "));
+            setErrorMessage(errorMessage);
         } else {
-            setErrorMessage("");
+            setErrorMessage([""]);
         }
 
         resetToDefaults();
@@ -47,7 +47,7 @@ export default function Login() {
         }
 
         timer.current = setTimeout(() => {
-            setErrorMessage("");
+            setErrorMessage([""]);
             setUsernameBorder("border-slate-800");
             setPasswordBorder("border-slate-800");
         }, 5000);
@@ -63,10 +63,12 @@ export default function Login() {
             </div>
 
             <div className="App flex flex-col justify-between text-3xl text-white h-screen pt-24">
-                <div className="mx-auto my-auto flex flex-col justify-around w-11/12 sm:w-1/2 h-1/3 border-2 rounded-3xl">
+                <div className="mx-auto my-auto flex flex-col justify-around w-11/12 sm:w-1/2 h-1/3 border-2 rounded-3xl max-w-96">
                     <p className="text-center font-bold">Login</p>
-                    <div className="Error text-red-400 text-base text-wrap self-center">
-                        {errorMessage}
+                    <div className="Error text-red-400 text-base text-wrap self-center flex flex-col max-h-7 -mt-2">
+                        {errorMessage.map((message, i) => (
+                            <p>{message}</p>
+                        ))}
                     </div>
                     <form className="flex flex-col self-center font-normal text-base">
                         <label>Username:</label>

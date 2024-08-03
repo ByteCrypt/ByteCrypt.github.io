@@ -4,10 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function Header() {
-    const buttonClick = () => {
-        alert("You did a thing");
-    };
-
     return (
         <>
             <Link className="link flex" href="/">
@@ -20,7 +16,7 @@ export default function Header() {
             <div className="flex text-sm gap-2 items-center">
                 <Link className="link" href="/about">About Us</Link>
                 <Link className="link" href="/info">Info</Link>
-                <button className="h-7 w-24 rounded-3xl bg-violet-700 hover:bg-blue-500 align-top" onClick={buttonClick}>Get Started</button>
+                <Link className="mt-0.5 h-7 w-24 pt-0.5 text-center rounded-3xl bg-violet-700 hover:bg-blue-500" href="/getStarted">Get Started</Link>
                 <User />
             </div>
         </>
